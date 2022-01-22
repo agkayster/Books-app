@@ -11,7 +11,8 @@ class Register extends React.Component {
       formData: {
         hasAgreed: false
       },
-      errors: {}
+      errors: {},
+      username: ''
     }
 
     this.handleChange = this.handleChange.bind(this)
@@ -160,7 +161,10 @@ class Register extends React.Component {
                         className='FormField__Checkbox'
                         type='checkbox'
                         name='hasAgreed'
-                        checked={this.state.hasAgreed}
+                        checked={
+                          this.state.formData
+                            .hasAgreed
+                        }
                         onChange={this.handleChange}
                       />
                       <span className='checked'>

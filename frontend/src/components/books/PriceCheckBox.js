@@ -12,7 +12,7 @@ const PriceCheckBox = ({
       <input
         type='checkbox'
         checked={isChecked}
-        onChange={(e) => handleSortPrice(e, priceRange)}
+        onChange={(e) => handleSortPrice(e, priceRange)} // Here "priceRange" is the "value" in the "handlePriceCheckBox" method
         name={name}
       />
       {name}

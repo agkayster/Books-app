@@ -115,7 +115,8 @@ const Books = () => {
   }, [])
 
   const filterBooksByText = (book) => {
-    if (!searchTerm) return true
+    // "book" in all the filters comes from "filterBooks" below
+    if (!searchTerm) return true // Here searchTerm/RegExp for searchTerm to test is coming from "handleSearch"
     return (
       searchTerm.test(book.title) ||
 			searchTerm.test(
@@ -128,16 +129,19 @@ const Books = () => {
 
   const filterBooksByGenre = (book) => {
     if (!genresToFilter.length) return true
-    return book.genres.some((genre) =>
-      genresToFilter.includes(genre.name.toLowerCase())
+    return book.genres.some(
+      (
+        genre // book.genres is an array hence the use of ".some"
+      ) => genresToFilter.includes(genre.name.toLowerCase()) // Where some of the "genre" when brougth to lower case can be found in the "genresToFilter" array.
     )
   }
 
   const filterBooksByPrice = (book) => {
     if (!pricesToFilter.length) return true
     return pricesToFilter.some(
-      ({ priceMin, priceMax }) =>
-        book.price >= priceMin && book.price <= priceMax
+      (
+        { priceMin, priceMax } // Here we destructured "prices.priceRange.priceMin and priceMax"
+      ) => book.price >= priceMin && book.price <= priceMax // here we compare whatever "book.price" we get from each book against priceMin and priceMax from "prices.priceRange.priceMin and priceMax"
     )
   }
 
@@ -150,7 +154,7 @@ const Books = () => {
 
   const filterBooks = (books) => {
     console.log('books in filter func', books)
-    return books.data.filter((book) => passesAllFilters(book))
+    return books.data.filter((book) => passesAllFilters(book)) // Here we filter all the "books" from /api/ to check whether any of the "book" or each "book" meets the condition in "passesAllFilters"
   }
 
   const passesAllFilters = (book) =>
@@ -160,15 +164,17 @@ const Books = () => {
       filterBooksByPrice,
       filterBooksByRatings
     ].reduce((passedPrevFilter, currFilterFunc) => {
+      //Here each "book" is passed into each of the filters and then we get the final result
       return passedPrevFilter && currFilterFunc(book)
     }, true)
 
   const handleSearch = (e) => {
-    setSearchTerm(new RegExp(e.target.value, 'i'))
+    setSearchTerm(new RegExp(e.target.value, 'i')) // Here we implement "searchTerm" with RegExp
   }
 
   const handleGenreCheckBox = ({ target: { value, checked } }) => {
-    setCheckBoxState({ ...checkBoxState, [value]: checked })
+    //Here we destructure "e.target.value" and "e.target.checked"
+    setCheckBoxState({ ...checkBoxState, [value]: checked }) // checkBoxState is an object
 
     const genresCheckBox = checked
       ? [...genresToFilter, value]
@@ -177,10 +183,11 @@ const Books = () => {
   }
 
   const handlePriceCheckBox = ({ target: { name, checked } }, value) => {
+    // value here comes from "prices.priceRange" above
     setCheckBoxState({ ...checkBoxState, [name]: checked })
 
     const pricesCheckBox = checked
-      ? [...pricesToFilter, value]
+      ? [...pricesToFilter, value] // here we copy everything in pricesToFilter into the array and replace with "value"
       : pricesToFilter.filter(
         (price) => price.priceMin !== value.priceMin
 			  )
@@ -196,6 +203,7 @@ const Books = () => {
       : ratingsToFilter.filter((rating) => rating !== value)
     setRatingsToFilter(ratingsCheckBox)
   }
+  // All "checkBoxState" under "handleRatingCheckBox" or any other "handle" are Objects
 
   if (books.length === 0) return <h1>Please wait while loading...</h1>
 
@@ -210,15 +218,19 @@ const Books = () => {
             <p className='menu-label is-centered genre'>
               <strong>Genres</strong>
             </p>
-            {genres.map((genre) => (
-              <GenreCheckBox
-                key={genre.value}
-                genreClass={genre.genreClass}
-                isChecked={checkBoxState[genre.value] || ''}
-                value={genre.value}
-                handleSort={handleGenreCheckBox}
-              />
-            ))}
+            {genres.map(
+              (
+                genre // Here "genres" is gotten from above array of objects
+              ) => (
+                <GenreCheckBox
+                  key={genre.value}
+                  genreClass={genre.genreClass}
+                  isChecked={checkBoxState[genre.value] || ''} // checkBoxState is an object and we use bracket notation, checkBoxState[genre.value] is the key and what we check is the value
+                  value={genre.value}
+                  handleSort={handleGenreCheckBox}
+                />
+              )
+            )}
           </div>
 
           <div className='control price'>
@@ -230,7 +242,7 @@ const Books = () => {
                 key={price.name}
                 priceClass={price.priceClass}
                 isChecked={checkBoxState[price.name] || ''}
-                priceRange={price.priceRange}
+                priceRange={price.priceRange} // Here we pass "priceRange", which we would specify as the value in "PriceCheckBox" component
                 name={price.name}
                 handleSortPrice={handlePriceCheckBox}
               />
@@ -241,15 +253,21 @@ const Books = () => {
             <p className='menu-label is-centered rating'>
               <strong>Rating(Over 5)</strong>
             </p>
-            {ratings.map((rating) => (
-              <RatingCheckBox
-                key={rating.value}
-                ratingClass={rating.ratingClass}
-                isChecked={checkBoxState[rating.value] || ''}
-                value={rating.value}
-                handleSortRating={handleRatingCheckBox}
-              />
-            ))}
+            {ratings.map(
+              (
+                rating // "ratings" is an array of objects from above
+              ) => (
+                <RatingCheckBox
+                  key={rating.value}
+                  ratingClass={rating.ratingClass}
+                  isChecked={
+                    checkBoxState[rating.value] || ''
+                  }
+                  value={rating.value} // e.target.value above is specified as the "key" in bracket notation and it points here and the value "checked" is what we check in the app.
+                  handleSortRating={handleRatingCheckBox}
+                />
+              )
+            )}
           </div>
         </aside>
         <section className='section'>
